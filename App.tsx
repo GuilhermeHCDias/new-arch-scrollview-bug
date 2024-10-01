@@ -1,117 +1,99 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
+  Dimensions,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const itemSize = 36;
+const dummyItems = [...Array(30)].map((_, index) => index);
+const screenWidth = Dimensions.get('screen').width;
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const renderScrollViews = (id: string) => {
+    return [...Array(3)].map((_, index) => (
+      <ScrollView
+        key={`${id}${index}`}
+        onMomentumScrollEnd={() => console.log(`end-${index}`)}
+        showsVerticalScrollIndicator={false}
+        decelerationRate="fast"
+        snapToInterval={itemSize}>
+        {dummyItems.map(item => (
+          <View key={`i${id}${item}`} style={styles.itemContainer}>
+            <Text>{item}</Text>
+          </View>
+        ))}
+      </ScrollView>
+    ));
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    <SafeAreaView style={styles.container}>
+      <View style={styles.scrollContainer}>
+        <Text style={[styles.title, {color: 'green'}]}>Works properly</Text>
+        <View style={styles.wrapper}>{renderScrollViews('a')}</View>
+      </View>
+
+      <View style={styles.scrollContainer}>
+        <Text style={[styles.title, {color: 'green'}]}>
+          Works properly: with margin
+        </Text>
+        <View style={[styles.wrapper, {marginHorizontal: 10}]}>
+          {renderScrollViews('b')}
         </View>
-      </ScrollView>
+      </View>
+
+      <View style={styles.scrollContainer}>
+        <Text style={[styles.title, {color: 'red'}]}>
+          Don't work: with padding
+        </Text>
+        <View style={[styles.wrapper, {paddingHorizontal: 20}]}>
+          {renderScrollViews('c')}
+        </View>
+      </View>
+
+      <View style={styles.scrollContainer}>
+        <Text style={[styles.title, {color: 'red'}]}>
+          Don't work: with element
+        </Text>
+        <View style={styles.wrapper}>
+          <View style={{width: 100, height: 50, backgroundColor: 'gray'}}>
+            <Text>Random element</Text>
+          </View>
+          {renderScrollViews('d')}
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  scrollContainer: {
+    marginBottom: 24,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+    padding: 8,
   },
-  sectionDescription: {
-    marginTop: 8,
+  itemContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: itemSize,
+  },
+  wrapper: {
+    width: screenWidth,
+    backgroundColor: 'lightgray',
+    flexDirection: 'row',
+    height: itemSize * 3,
+  },
+  title: {
     fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+    marginVertical: 16,
   },
 });
 
